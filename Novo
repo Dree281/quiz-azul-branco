@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#000000;
+    --bg2:#062a5f;
+    --bg3:#2f2f33;
+    --bg4:#dcdde1;
+    --accent1:#00aaff;
+    --accent2:#00ffcc;
+    --glass: rgba(255,255,255,0.06);
+  }
+
+  html,body{
+    height:100%;
+    margin:0;
+    font-family:'Poppins',sans-serif;
+    background: linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3),var(--bg4));
+    background-size:400% 400%;
+    animation:gradientMove 18s ease infinite;
+    color:#ffffff;
+    overflow:hidden;
+  }
+
+  @keyframes gradientMove{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
+
+  .wrap{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    box-sizing:border-box;
+    position:relative;
+    z-index:2;
+  }
+
+  .card{
+    width:100%;
+    max-width:760px;
+    background:var(--glass);
+    border-radius:18px;
+    padding:32px;
+    box-sizing:border-box;
+    backdrop-filter:blur(10px) saturate(120%);
+    box-shadow:0 8px 30px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.02);
+    text-align:center;
+    position:relative;
+  }
+
+  h1{ margin:0 0 8px 0; font-size:32px; letter-spacing:0.4px; }
+  h3{ margin:0 0 18px 0; font-weight:500; color:#dfe6f0; font-size:15px; }
+
+  .muted{ color:#d0d6e0; font-size:14px; margin-top:6px; }
+
+  .btn{
+    display:inline-block;
+    background:linear-gradient(180deg, rgba(0,170,255,0.18), rgba(0,170,255,0.08));
+    border:1px solid rgba(0,170,255,0.3);
+    color:#fff;
+    padding:12px 22px;
+    border-radius:12px;
+    cursor:pointer;
+    margin:8px;
+    font-size:15px;
+    transition:transform .18s ease, box-shadow .18s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .btn:hover{ transform:translateY(-4px); box-shadow:0 8px 30px rgba(0,170,255,0.12); }
+  .btn:active{ transform:translateY(-1px) scale(.99); }
+
+  .btn-small{ padding:8px 12px; font-size:14px; border-radius:10px; }
+
+  .hidden{ display:none; }
+
+  .answers{ margin-top:14px; display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+
+  .answer-btn{
+    min-width:180px;
+    max-width:calc(50% - 20px);
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.04);
+    color:#fff;
+    padding:10px 14px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:all .22s ease;
+    font-size:14px;
+  }
+  .answer-btn:hover{ transform:translateY(-4px); box-shadow:0 10px 30px rgba(0,0,0,0.45); }
+  .answer-btn:disabled{ opacity:0.7; cursor:default; transform:none; }
+
+  .progress{
+    height:14px;
+    background:rgba(255,255,255,0.04);
+    border-radius:999px;
+    overflow:hidden;
+    margin:18px 0 8px;
+  }
+  .progress .fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--accent1),var(--accent2));
+    transition:width .5s ease;
+  }
+
+  .meta{ font-size:14px; margin-top:8px; color:#dbe8ff; }
+
+  .particles{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+  }
+  .p{ position:absolute; border-radius:999px; opacity:.9; filter:blur(6px); mix-blend-mode:screen; }
+
+  .transition{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:6;
+    background:rgba(0,6,30,0.7);
+    color:#fff; font-size:22px; opacity:0; pointer-events:none; transition:opacity .45s ease;
+  }
+  .transition.show{ opacity:1; pointer-events:auto; }
+
+  @media (max-width:640px){
+    .answer-btn{ min-width:100%; max-width:100%; }
+    .card{ padding:22px; }
+  }
+
+  /* Painel premium */
+  #premiumPanel{position:fixed; top:10%; left:50%; transform:translateX(-50%); max-width:500px; z-index:10; background:rgba(0,0,0,0.8);}
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<div class="wrap">
+  <!-- Tela inicial -->
+  <div class="card" id="startScreen">
+    <h1>Quiz</h1>
+    <h3>Criado por André, Pedro, Ian e Gabriel — 9º Ano B</h3>
+    <p class="muted">Escolha um tema inicial. Depois de cada tema, o próximo começa automaticamente até completar todos os 3 (30 perguntas).</p>
+    <div style="margin-top:18px;">
+      <button class="btn" onclick="startGame()">Começar</button>
+    </div>
+  </div>
+
+  <!-- Tela de escolha de tema -->
+  <div class="card hidden" id="themeScreen">
+    <h1>Escolha um tema inicial</h1>
+    <div style="margin-top:14px;">
+      <button class="btn" onclick="selectTheme('Rito')">Rito</button>
+      <button class="btn" onclick="selectTheme('Mito')">Mito</button>
+      <button class="btn" onclick="selectTheme('Símbolo')">Símbolo</button>
+    </div>
+  </div>
+
+  <!-- Tela do quiz -->
+  <div class="card hidden" id="quizScreen" aria-live="polite">
+    <h1 id="themeTitle">Tema</h1>
+    <p id="questionText" style="font-size:18px; margin-top:6px;">Pergunta</p>
+    <div class="answers" id="answersWrap"></div>
+    <div class="progress" aria-hidden="true">
+      <div class="fill" id="progressFill"></div>
+    </div>
+    <div class="meta" id="metaInfo">Pergunta x de 10 — Tema: Rito</div>
+    <div style="margin-top:14px;">
+      <button class="btn btn-small hidden" id="nextBtn" onclick="nextQuestion()">Próxima</button>
+      <button class="btn btn-small" onclick="openPremium()">🎖 Painel Premium</button>
+    </div>
+  </div>
+</div>
+
+<!-- Painel Premium -->
+<div id="premiumPanel" class="card hidden">
+  <h1>Conquistas & Estatísticas</h1>
+  <div id="badges" style="margin:10px 0;"></div>
+  <div id="stats" style="margin-top:12px; text-align:left;">
+    <p>Acertos: <span id="statCorrect">0</span></p>
+    <p>Erros: <span id="statWrong">0</span></p>
+    <p>Progresso: <span id="statProgress">0%</span></p>
+  </div>
+  <div id="miniGame" style="margin-top:12px;">
+    <p>Mini-game: Clique na resposta correta para ganhar pontos extras!</p>
+    <div class="answers" id="miniAnswers"></div>
+  </div>
+  <button class="btn" onclick="closePremium()">Fechar Painel</button>
+</div>
+
+<!-- Controles de música -->
+<div style="position:fixed; right:18px; bottom:18px; z-index:12;">
+  <button class="btn btn-small" onclick="toggleMusic()">🎵 Pausar / Tocar</button>
+  <input type="range" min="0" max="1" step="0.01" value="0.18" onchange="setVolume(this.value)">
+</div>
+
+<!-- Sons -->
+<audio id="bgAudio" loop>
+  <source src="https://assets.mixkit.co/music/preview/mixkit-calm-lofi-ambient-155.mp3" type="audio/mpeg">
+</audio>
+<audio id="sfxCorrect">
+  <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
+</audio>
+<audio id="sfxWrong">
+  <source src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" type="audio/ogg">
+</audio>
+<audio id="sfxClick">
+  <source src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" type="audio/ogg">
+</audio>
+
+<div id="transitionOverlay" class="transition">Próximo Tema...</div>
+
+<script>
+// ------------------ Quiz Data ------------------
+const quizData = {
+  "Rito":[
+    {q:"O que é um rito?", a:["Uma prática simbólica repetida","Um ser espiritual","Um lugar sagrado","Uma história mística"], correct:0},
+    {q:"Os ritos geralmente expressam:", a:["A cultura e fé de um grupo","Somente diversão","Fatos científicos","Curiosidades históricas"], correct:0},
+    {q:"Qual destes é um exemplo de rito?", a:["Casamento","Matemática","Pintura","Sonho"], correct:0},
+    {q:"Ritos são frequentemente ligados a:", a:["Tradições e cerimônias","Jogos e apostas","Viagens e turismo","Estudos científicos"], correct:0},
+    {q:"Ritos podem marcar:", a:["Passagens da vida","O tempo do dia","O clima","A política"], correct:0},
+    {q:"Um rito pode ser considerado:", a:["Ato simbólico e significativo","Algo sem importância","Um erro cultural","Somente religião"], correct:0},
+    {q:"Ritos podem reforçar:", a:["Identidade e união social","Desigualdade","Ignorância","Conflito"], correct:0},
+    {q:"Em religiões, o rito serve para:", a:["Ligar o humano ao sagrado","Ensinar matemática","Contar histórias","Divertir"], correct:0},
+    {q:"Ritos são diferentes conforme:", a:["A cultura e crença","O clima","A política","A tecnologia"], correct:0},
+    {q:"Um exemplo de rito de passagem é:", a:["Formatura","Trabalho","Leitura","Alimentação"], correct:0}
+  ],
+  "Mito":[
+    {q:"O que é um mito?", a:["Uma narrativa simbólica","Um fato científico","Uma lei política","Uma invenção moderna"], correct:0},
+    {q:"Mitos explicam:", a:["A origem e o sentido das coisas","A economia","A tecnologia","A matemática"], correct:0},
+    {q:"Os mitos são comuns em:", a:["Todas as culturas","Apenas na Grécia","Somente na Ásia","Nenhuma"], correct:0},
+    {q:"Um herói mitológico representa:", a:["Valores humanos","Dinheiro","Política","Ciência"], correct:0},
+    {q:"Os mitos geralmente têm:", a:["Deuses e forças sobrenaturais","Animais de estimação","Máquinas","Números"], correct:0},
+    {q:"O mito serve para:", a:["Dar sentido à realidade","Ensinar matemática","Registrar fatos reais","Controlar o clima"], correct:0},
+    {q:"Um exemplo de mito famoso é:", a:["Prometeu","Einstein","Newton","Tesla"], correct:0},
+    {q:"Os mitos podem ser contados por meio de:", a:["Palavras e rituais","Somente livros","Computadores","Televisão"], correct:0},
+    {q:"O mito e o símbolo se relacionam porque:", a:["Ambos expressam significados profundos","São opostos","Não se ligam","São ciências"], correct:0},
+    {q:"O mito do dilúvio representa:", a:["Renovação e purificação","Destruição sem sentido","Fome","Inverno"], correct:0}
+  ],
+  "Símbolo":[
+    {q:"O que é um símbolo?", a:["Representação de uma ideia","Um objeto comum","Um som qualquer","Um tipo de rito"], correct:0},
+    {q:"Símbolos são usados para:", a:["Transmitir significados","Comer","Dormir","Escrever"], correct:0},
+    {q:"O símbolo da paz é:", a:["O círculo com ramos","Uma estrela","Uma chama","Um triângulo"], correct:0},
+    {q:"Símbolos religiosos representam:", a:["O sagrado e suas crenças","Cidades","Lugares turísticos","Números"], correct:0},
+    {q:"A cruz é símbolo de:", a:["Cristianismo","Budismo","Islã","Hinduísmo"], correct:0},
+    {q:"Um símbolo pode ser:", a:["Imagem, som ou gesto","Somente objeto","Somente palavra","Somente cor"], correct:0},
+    {q:"Símbolos unem pessoas porque:", a:["Compartilham significados","São bonitos","São raros","São misteriosos"], correct:0},
+    {q:"As cores também são símbolos de:", a:["Emoções e ideias","Somente arte","Matemática","Ruído"], correct:0},
+    {q:"O símbolo do coração representa:", a:["Amor","Medo","Fome","Tempo"], correct:0},
+    {q:"Símbolos podem mudar de sentido conforme:", a:["A cultura","O clima","O idioma","O tamanho"], correct:0}
+  ]
+};
+
+// ------------------ Variáveis Globais ------------------
+let themesOrder=[], currentTheme="", questionIndex=0, score=0, shuffledPerTheme={};
+const startScreen = document.getElementById('startScreen');
+const themeScreen = document.getElementById('themeScreen');
+const quizScreen = document.getElementById('quizScreen');
+const themeTitle = document.getElementById('themeTitle');
+const questionText = document.getElementById('questionText');
+const answersWrap = document.getElementById('answersWrap');
+const progressFill = document.getElementById('progressFill');
+const metaInfo = document.getElementById('metaInfo');
+const nextBtn = document.getElementById('nextBtn');
+const transitionOverlay = document.getElementById('transitionOverlay');
+
+// Sons
+const bgAudio = document.getElementById('bgAudio');
+const sfxCorrect = document.getElementById('sfxCorrect');
+const sfxWrong = document.getElementById('sfxWrong');
+const sfxClick = document.getElementById('sfxClick');
+
+// Painel Premium
+const premiumPanel = document.getElementById('premiumPanel');
+const badgesEl = document.getElementById('badges');
+const statCorrect = document.getElementById('statCorrect');
+const statWrong = document.getElementById('statWrong');
+const statProgress = document.getElementById('statProgress');
+const miniAnswers = document.getElementById('miniAnswers');
+let premiumStats={correct:0,wrong:0,total:0};
+
+// ------------------ Funções ------------------
+function startGame(){
+  sfxClick.play();
+  startScreen.classList.add('hidden');
+  themeScreen.classList.remove('hidden');
+  bgAudio.play().catch(()=>{});
+}
+
+function selectTheme(theme){
+  sfxClick.play();
+  const others=Object.keys(quizData).filter(t=>t!==theme);
+  themesOrder=[theme,...others];
+  for(let t of themesOrder) shuffledPerTheme[t]=shuffleArray(quizData[t]);
+  currentTheme = themesOrder.shift();
+  questionIndex=0; score=0;
+  themeScreen.classList.add('hidden'); quizScreen.classList.remove('hidden');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q=shuffledPerTheme[currentTheme][questionIndex];
+  themeTitle.textContent=currentTheme;
+  questionText.textContent=q.q;
+  answersWrap.innerHTML='';
+  const ansIndex=shuffleArray([0,1,2,3]);
+  ansIndex.forEach(i=>{
+    const btn=document.createElement('button');
+    btn.className='answer-btn';
+    btn.textContent=q.a[i];
+    btn.onclick=()=>selectAnswer(i,q.correct);
+    answersWrap.appendChild(btn);
+  });
+  progressFill.style.width=`${(questionIndex/10)*100}%`;
+  metaInfo.textContent=`Pergunta ${questionIndex+1} de 10 — Tema: ${currentTheme}`;
+  nextBtn.classList.add('hidden');
+}
+
+function selectAnswer(selected, correct){
+  const buttons = answersWrap.querySelectorAll('button');
+  buttons.forEach((btn,i)=>{
+    btn.disabled=true;
+    if(i===selected && selected!==correct) btn.style.background='#ff4444';
+    if(i===correct) btn.style.background='#00ff99';
+  });
+  if(selected===correct){ score++; sfxCorrect.play(); updatePremiumStats(true); }else{ sfxWrong.play(); updatePremiumStats(false); }
+  nextBtn.classList.remove('hidden');
+}
+
+function nextQuestion(){
+  sfxClick.play();
+  questionIndex++;
+  if(questionIndex<10) renderQuestion();
+  else showNextTheme();
+}
+
+function showNextTheme(){
+  transitionOverlay.classList.add('show');
+  setTimeout(()=>{
+    transitionOverlay.classList.remove('show');
+    if(themesOrder.length>0){
+      currentTheme = themesOrder.shift(); questionIndex=0; score=0;
+      renderQuestion();
+    }else showResults();
+  },900);
+}
+
+function showResults(){
+  quizScreen.innerHTML=`<h1>Fim do Quiz!</h1>
+  <p>Você completou todos os temas.</p>
+  <button class="btn" onclick="location.reload()">Recomeçar</button>`;
+}
+
+// ------------------ Música ------------------
+function toggleMusic(){ if(bgAudio.paused) bgAudio.play(); else bgAudio.pause(); }
+function setVolume(val){ bgAudio.volume=val; }
+
+// ------------------ Painel Premium ------------------
+function openPremium(){ premiumPanel.classList.remove('hidden'); loadMiniGame(); }
+function closePremium(){ premiumPanel.classList.add('hidden'); }
+function updatePremiumStats(correct){ premiumStats.correct+=correct?1:0; premiumStats.wrong+=correct?0:1; premiumStats.total++; statCorrect.textContent=premiumStats.correct; statWrong.textContent=premiumStats.wrong; statProgress.textContent=Math.round((premiumStats.correct/premiumStats.total)*100)+'%'; updateBadges(); }
+function updateBadges(){
+  badgesEl.innerHTML='';
+  if(premiumStats.correct>=5) badgesEl.innerHTML+='🏅 Acertou 5 respostas! ';
+  if(premiumStats.correct>=10) badgesEl.innerHTML+='🌟 Acertou 10 respostas! ';
+  if(premiumStats.correct>=15) badgesEl.innerHTML+='🔥 Tema completado! ';
+  if(premiumStats.correct%5===0 && premiumStats.correct>0){
+    for(let i=0;i<30;i++){
+      const c=document.createElement('div'); c.className='p'; c.style.width=c.style.height=(Math.random()*6+4)+'px'; c.style.left=(Math.random()*100)+'%'; c.style.top='0%'; c.style.background=['#00ffff','#00ff99','#ffffff'][Math.floor(Math.random()*3)]; c.style.opacity=Math.random();
+      document.body.appendChild(c);
+      c.animate([{transform:'translateY(0px)'},{transform:'translateY(400px)'}],{duration:2000+Math.random()*1000});
+      setTimeout(()=>c.remove(),2200);
+    }
+  }
+}
+
+// ------------------ Mini-game ------------------
+function loadMiniGame(){
+  miniAnswers.innerHTML='';
+  const options=['Rito','Mito','Símbolo','Outra'];
+  const correctIndex=Math.floor(Math.random()*options.length);
+  options.forEach((opt,i)=>{
+    const btn=document.createElement('button'); btn.className='answer-btn'; btn.textContent=opt;
+    btn.onclick=()=>{
+      if(i===correctIndex){ alert('Correto! +1 ponto extra'); updatePremiumStats(true); }
+      else{ alert('Errado!'); updatePremiumStats(false); }
+      loadMiniGame();
+    };
+    miniAnswers.appendChild(btn);
+  });
+}
+
+// ------------------ Util ------------------
+function shuffleArray(arr){ return arr.map(a=>[Math.random(),a]).sort((a,b)=>a[0]-b[0]).map(a=>a[1]); }
+
+// ------------------ Partículas Fundo ------------------
+const particlesContainer=document.getElementById('particles');
+for(let i=0;i<80;i++){
+  const p=document.createElement('div'); p.className='p'; p.style.width=p.style.height=(Math.random()*4+3)+'px'; p.style.left=Math.random()*100+'%'; p.style.top=Math.random()*100+'%'; p.style.background=['#00ffff','#00ff99','#ffffff','#aaa'][Math.floor(Math.random()*4)]; p.style.opacity=Math.random();
+  particlesContainer.appendChild(p);
+  animateParticle(p);
+}
+function animateParticle(el){ const dur=4000+Math.random()*5000; const dist=200+Math.random()*200; el.animate([{transform:'translateY(0px)'},{transform:`translateY(${dist}px)`}],{duration:dur,iterations:Infinity, direction:'alternate'}); }
+
+</script>
+</body>
+</html>
