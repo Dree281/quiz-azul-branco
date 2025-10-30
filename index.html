@@ -3,180 +3,71 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz Premium</title>
+<title>Quiz Azul e Branco</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0a2a88, #00aaff);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    text-align: center;
+  }
 
-/* Fundo animado com degradê suave */
-body {
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: linear-gradient(270deg, #0a2a88, #ffffff, #b19cd9);
-  background-size: 600% 600%;
-  animation: gradientBG 60s ease infinite;
-  color: #fff;
-  text-align: center;
-  position: relative;
-}
+  .container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 1s ease;
+  }
 
-@keyframes gradientBG {
-  0% {background-position:0% 50%;}
-  50% {background-position:100% 50%;}
-  100% {background-position:0% 50%;}
-}
+  h1, h2 {
+    margin-bottom: 20px;
+  }
 
-/* Container do quiz */
-.container {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
-  padding: 30px;
-  width: 90%;
-  max-width: 600px;
-  box-shadow: 0 0 30px rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(20px);
-  animation: fadeIn 1s ease;
-  transition: all 0.5s ease;
-  position: relative;
-  z-index: 2;
-}
+  button {
+    background: #fff;
+    color: #0a2a88;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 25px;
+    margin: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
 
-/* Títulos e textos */
-h1, h2, h3, p {
-  margin-bottom: 20px;
-}
+  button:hover {
+    background: #00aaff;
+    color: #fff;
+    box-shadow: 0 0 10px #00aaff;
+  }
 
-/* Botões com brilho premium */
-button {
-  background: #fff;
-  color: #0a2a88;
-  border: none;
-  border-radius: 15px;
-  padding: 14px 28px;
-  margin: 8px;
-  font-size: 1.1em;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-button::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: rgba(255,255,255,0.2);
-  transform: rotate(45deg);
-  transition: all 0.5s;
-}
-button:hover::before {
-  top: -20%;
-  left: -20%;
-}
-button:hover {
-  background: #b19cd9;
-  color: #fff;
-  box-shadow: 0 0 25px #b19cd9, 0 0 50px #ffffff33;
-  transform: scale(1.08);
-}
-button:active {
-  transform: scale(0.95);
-  box-shadow: 0 0 15px #b19cd9, 0 0 30px #ffffff22;
-}
+  .hidden {
+    display: none;
+  }
 
-/* Ocultar elementos */
-.hidden { display: none; }
-
-/* Animação de fadeIn */
-@keyframes fadeIn {
-  from {opacity: 0; transform: translateY(20px);}
-  to {opacity: 1; transform: translateY(0);}
-}
-
-/* Barra de progresso */
-.progress-bar {
-  width: 100%;
-  height: 20px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 10px;
-  margin-top: 15px;
-  overflow: hidden;
-}
-.progress-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #00ffcc, #b19cd9);
-  width: 0%;
-  transition: width 0.5s ease;
-  border-radius: 10px;
-}
-
-/* Partículas premium */
-#particles {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-}
-.particle {
-  position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(circle, #ffffffaa, #b19cd9aa);
-  animation: floatUp linear infinite;
-  filter: drop-shadow(0 0 8px #fff);
-}
-@keyframes floatUp {
-  0% {transform: translateY(0) scale(1);}
-  100% {transform: translateY(-120vh) scale(0.3);}
-}
-
-/* Controle de música */
-#musicControl {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 3;
-  background: rgba(255,255,255,0.2);
-  border-radius: 50%;
-  padding: 12px;
-  cursor: pointer;
-  color: #fff;
-  font-weight: bold;
-  font-size: 18px;
-  box-shadow: 0 0 10px #fff;
-  transition: all 0.3s ease;
-}
-#musicControl:hover {
-  transform: scale(1.2);
-  box-shadow: 0 0 25px #fff, 0 0 50px #b19cd9;
-}
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
 </style>
 </head>
 <body>
 
-<!-- Fundo de partículas -->
-<div id="particles"></div>
-
-<!-- Música de fundo -->
-<audio id="bgMusic" src="https://www.bensound.com/bensound-music/bensound-slowmotion.mp3" autoplay loop></audio>
-<div id="musicControl" onclick="toggleMusic()">🔊</div>
-
-<!-- Tela inicial -->
 <div class="container" id="start-screen">
-  <h1>Quiz Premium</h1>
+  <h1>Quiz Azul e Branco</h1>
   <h3>Criado por André, Pedro, Ian e Gabriel – 9º Ano B</h3>
   <button onclick="startGame()">Começar</button>
 </div>
 
-<!-- Tela de escolha de tema -->
 <div class="container hidden" id="theme-screen">
   <h2>Escolha um tema para começar</h2>
   <button onclick="selectTheme('Rito')">Rito</button>
@@ -184,48 +75,22 @@ button:active {
   <button onclick="selectTheme('Mito')">Mito</button>
 </div>
 
-<!-- Tela de perguntas -->
 <div class="container hidden" id="quiz">
   <h1 id="theme">Tema</h1>
   <p id="question">Pergunta</p>
   <div id="answers"></div>
-  <div class="progress-bar">
-    <div class="progress-bar-fill" id="progressFill"></div>
-  </div>
   <p id="progress"></p>
   <button id="nextBtn" class="hidden">Próxima</button>
 </div>
 
-<!-- Sons de efeitos -->
 <audio id="correctSound">
   <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
 </audio>
 <audio id="wrongSound">
   <source src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" type="audio/ogg">
 </audio>
-<audio id="clickSound">
-  <source src="https://actions.google.com/sounds/v1/cartoon/wood_click.ogg" type="audio/ogg">
-</audio>
 
 <script>
-// ---------- Partículas premium ----------
-const particlesContainer = document.getElementById('particles');
-const particleCount = 80;
-
-for(let i=0;i<particleCount;i++){
-  const p = document.createElement('div');
-  p.classList.add('particle');
-  const size = Math.random()*8+3;
-  p.style.width = size+'px';
-  p.style.height = size+'px';
-  p.style.left = Math.random()*100+'%';
-  p.style.top = Math.random()*100+'%';
-  p.style.animationDuration = (Math.random()*25+15)+'s';
-  p.style.opacity = Math.random()*0.8+0.2;
-  particlesContainer.appendChild(p);
-}
-
-// ---------- Quiz ----------
 const quizData = {
   "Rito": [
     { q: "O que é um rito?", a: ["Uma prática simbólica repetida", "Um ser espiritual", "Um lugar sagrado", "Uma história mística"], correct: 0 },
@@ -277,21 +142,15 @@ const questionEl = document.getElementById('question');
 const answersEl = document.getElementById('answers');
 const progressEl = document.getElementById('progress');
 const nextBtn = document.getElementById('nextBtn');
-const progressFill = document.getElementById('progressFill');
 const correctSound = document.getElementById('correctSound');
 const wrongSound = document.getElementById('wrongSound');
-const clickSound = document.getElementById('clickSound');
-const bgMusic = document.getElementById('bgMusic');
 
-// ---------- Funções do quiz ----------
 function startGame() {
-  clickSound.play();
   startScreen.classList.add('hidden');
   themeScreen.classList.remove('hidden');
 }
 
 function selectTheme(selected) {
-  clickSound.play();
   theme = selected;
   themeScreen.classList.add('hidden');
   quiz.classList.remove('hidden');
@@ -313,10 +172,6 @@ function loadQuestion() {
     btn.onclick = () => checkAnswer(i);
     answersEl.appendChild(btn);
   });
-
-  const percent = ((questionIndex)/10)*100;
-  progressFill.style.width = `${percent}%`;
-
   nextBtn.classList.add('hidden');
 }
 
@@ -325,50 +180,43 @@ function checkAnswer(selected) {
   const buttons = answersEl.querySelectorAll('button');
   buttons.forEach((btn, i) => {
     btn.disabled = true;
-    if(i === current.correct) btn.style.background = '#00ff99';
-    if(i === selected && i !== current.correct) btn.style.background = '#ff4444';
+    if (i === current.correct) {
+      btn.style.background = '#00ff99';
+    }
+    if (i === selected && i !== current.correct) {
+      btn.style.background = '#ff4444';
+    }
   });
 
-  if(selected === current.correct) { score++; correctSound.play(); } 
-  else { wrongSound.play(); }
-
+  if (selected === current.correct) {
+    score++;
+    correctSound.play();
+  } else {
+    wrongSound.play();
+  }
   nextBtn.classList.remove('hidden');
 }
 
 nextBtn.addEventListener('click', () => {
-  clickSound.play();
   questionIndex++;
-  if(questionIndex < 10) loadQuestion();
-  else showResult();
+  if (questionIndex < 10) {
+    loadQuestion();
+  } else {
+    showResult();
+  }
 });
 
 function showResult() {
-  let message = "";
-  const percent = score * 10;
-  if(percent === 100) message = "Incrível! Você acertou todas!";
-  else if(percent >= 70) message = "Muito bom! Quase perfeito!";
-  else if(percent >= 40) message = "Bom esforço! Continue tentando!";
-  else message = "Não desanime! Estude e tente de novo!";
-
   quiz.innerHTML = `
     <h1>Fim do Tema: ${theme}</h1>
     <p>Você acertou <strong>${score}</strong> de 10 perguntas.</p>
-    <p>${message}</p>
     <button onclick="backToThemes()">Voltar aos temas</button>
   `;
 }
 
 function backToThemes() {
-  clickSound.play();
   quiz.classList.add('hidden');
   themeScreen.classList.remove('hidden');
-  progressFill.style.width = `0%`;
-}
-
-// ---------- Controle de música ----------
-function toggleMusic() {
-  if(bgMusic.paused) bgMusic.play();
-  else bgMusic.pause();
 }
 </script>
 </body>
