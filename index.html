@@ -3,40 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz Azul e Branco</title>
+<title>Quiz</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+  /* Fundo animado */
   body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #0a2a88, #00aaff);
-    color: #fff;
+    margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
+    overflow: hidden;
+    background: linear-gradient(270deg, #0a2a88, #ffffff, #b19cd9);
+    background-size: 600% 600%;
+    animation: gradientBG 15s ease infinite;
+    color: #fff;
     text-align: center;
   }
 
+  @keyframes gradientBG {
+    0% {background-position:0% 50%;}
+    50% {background-position:100% 50%;}
+    100% {background-position:0% 50%;}
+  }
+
+  /* Container do quiz */
   .container {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     border-radius: 20px;
     padding: 30px;
     width: 90%;
     max-width: 600px;
     box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(15px);
     animation: fadeIn 1s ease;
+    transition: all 0.5s ease;
   }
 
-  h1, h2 {
+  h1, h2, h3, p {
     margin-bottom: 20px;
   }
 
+  /* Botões com hover animado */
   button {
     background: #fff;
     color: #0a2a88;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 12px 25px;
     margin: 8px;
     font-size: 1.1em;
@@ -45,29 +60,50 @@
   }
 
   button:hover {
-    background: #00aaff;
+    background: #b19cd9;
     color: #fff;
-    box-shadow: 0 0 10px #00aaff;
+    box-shadow: 0 0 15px #b19cd9;
+    transform: scale(1.05);
   }
 
-  .hidden {
-    display: none;
-  }
+  .hidden { display: none; }
 
   @keyframes fadeIn {
     from {opacity: 0; transform: translateY(20px);}
     to {opacity: 1; transform: translateY(0);}
   }
+
+  /* Barra de progresso */
+  .progress-bar {
+    width: 100%;
+    height: 20px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    margin-top: 15px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: #00ffcc;
+    width: 0%;
+    transition: width 0.5s ease;
+    border-radius: 10px;
+  }
 </style>
 </head>
 <body>
 
+<!-- Música de fundo -->
+<audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" autoplay loop></audio>
+
+<!-- Tela inicial -->
 <div class="container" id="start-screen">
-  <h1>Quiz Azul e Branco</h1>
+  <h1>Quiz</h1>
   <h3>Criado por André, Pedro, Ian e Gabriel – 9º Ano B</h3>
   <button onclick="startGame()">Começar</button>
 </div>
 
+<!-- Tela de escolha de tema -->
 <div class="container hidden" id="theme-screen">
   <h2>Escolha um tema para começar</h2>
   <button onclick="selectTheme('Rito')">Rito</button>
@@ -75,22 +111,31 @@
   <button onclick="selectTheme('Mito')">Mito</button>
 </div>
 
+<!-- Tela de perguntas -->
 <div class="container hidden" id="quiz">
   <h1 id="theme">Tema</h1>
   <p id="question">Pergunta</p>
   <div id="answers"></div>
+  <div class="progress-bar">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
   <p id="progress"></p>
   <button id="nextBtn" class="hidden">Próxima</button>
 </div>
 
+<!-- Sons de efeitos -->
 <audio id="correctSound">
   <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
 </audio>
 <audio id="wrongSound">
   <source src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" type="audio/ogg">
 </audio>
+<audio id="clickSound">
+  <source src="https://actions.google.com/sounds/v1/cartoon/wood_click.ogg" type="audio/ogg">
+</audio>
 
 <script>
+// Dados do Quiz
 const quizData = {
   "Rito": [
     { q: "O que é um rito?", a: ["Uma prática simbólica repetida", "Um ser espiritual", "Um lugar sagrado", "Uma história mística"], correct: 0 },
@@ -130,6 +175,7 @@ const quizData = {
   ]
 };
 
+// Variáveis globais
 let theme = "";
 let questionIndex = 0;
 let score = 0;
@@ -142,15 +188,20 @@ const questionEl = document.getElementById('question');
 const answersEl = document.getElementById('answers');
 const progressEl = document.getElementById('progress');
 const nextBtn = document.getElementById('nextBtn');
+const progressFill = document.getElementById('progressFill');
 const correctSound = document.getElementById('correctSound');
 const wrongSound = document.getElementById('wrongSound');
+const clickSound = document.getElementById('clickSound');
 
+// Funções do quiz
 function startGame() {
+  clickSound.play();
   startScreen.classList.add('hidden');
   themeScreen.classList.remove('hidden');
 }
 
 function selectTheme(selected) {
+  clickSound.play();
   theme = selected;
   themeScreen.classList.add('hidden');
   quiz.classList.remove('hidden');
@@ -172,6 +223,11 @@ function loadQuestion() {
     btn.onclick = () => checkAnswer(i);
     answersEl.appendChild(btn);
   });
+
+  // Atualiza barra de progresso
+  const percent = ((questionIndex)/10)*100;
+  progressFill.style.width = `${percent}%`;
+
   nextBtn.classList.add('hidden');
 }
 
@@ -180,43 +236,48 @@ function checkAnswer(selected) {
   const buttons = answersEl.querySelectorAll('button');
   buttons.forEach((btn, i) => {
     btn.disabled = true;
-    if (i === current.correct) {
-      btn.style.background = '#00ff99';
-    }
-    if (i === selected && i !== current.correct) {
-      btn.style.background = '#ff4444';
-    }
+    if(i === current.correct) btn.style.background = '#00ff99';
+    if(i === selected && i !== current.correct) btn.style.background = '#ff4444';
   });
 
-  if (selected === current.correct) {
+  if(selected === current.correct){
     score++;
     correctSound.play();
   } else {
     wrongSound.play();
   }
+
   nextBtn.classList.remove('hidden');
 }
 
 nextBtn.addEventListener('click', () => {
+  clickSound.play();
   questionIndex++;
-  if (questionIndex < 10) {
-    loadQuestion();
-  } else {
-    showResult();
-  }
+  if(questionIndex < 10) loadQuestion();
+  else showResult();
 });
 
 function showResult() {
+  let message = "";
+  const percent = score * 10;
+  if(percent === 100) message = "Incrível! Você acertou todas!";
+  else if(percent >= 70) message = "Muito bom! Quase perfeito!";
+  else if(percent >= 40) message = "Bom esforço! Continue tentando!";
+  else message = "Não desanime! Estude e tente de novo!";
+
   quiz.innerHTML = `
     <h1>Fim do Tema: ${theme}</h1>
     <p>Você acertou <strong>${score}</strong> de 10 perguntas.</p>
+    <p>${message}</p>
     <button onclick="backToThemes()">Voltar aos temas</button>
   `;
 }
 
 function backToThemes() {
+  clickSound.play();
   quiz.classList.add('hidden');
   themeScreen.classList.remove('hidden');
+  progressFill.style.width = `0%`;
 }
 </script>
 </body>
