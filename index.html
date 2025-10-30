@@ -1,470 +1,346 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Quiz</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg1:#000000;
-    --bg2:#062a5f;
-    --bg3:#2f2f33;
-    --bg4:#dcdde1;
-    --accent1:#00aaff;
-    --accent2:#00ffcc;
-    --glass: rgba(255,255,255,0.06);
-  }
-
-  html,body{
-    height:100%;
-    margin:0;
-    font-family:'Poppins',sans-serif;
-    background: linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3),var(--bg4));
-    background-size:400% 400%;
-    animation:gradientMove 18s ease infinite;
-    color:#ffffff;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    overflow:hidden;
-  }
-
-  @keyframes gradientMove{
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
-  }
-
-  /* layout center */
-  .wrap{
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:24px;
-    box-sizing:border-box;
-    position:relative;
-    z-index:2;
-  }
-
-  .card{
-    width:100%;
-    max-width:760px;
-    background:var(--glass);
-    border-radius:18px;
-    padding:32px;
-    box-sizing:border-box;
-    backdrop-filter:blur(10px) saturate(120%);
-    box-shadow:0 8px 30px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.02);
-    text-align:center;
-    position:relative;
-  }
-
-  h1{ margin:0 0 8px 0; font-size:32px; letter-spacing:0.4px; }
-  h3{ margin:0 0 18px 0; font-weight:500; color:#dfe6f0; font-size:15px; }
-
-  .muted{ color:#d0d6e0; font-size:14px; margin-top:6px; }
-
-  .btn{
-    display:inline-block;
-    background:linear-gradient(180deg, rgba(0,170,255,0.18), rgba(0,170,255,0.08));
-    border:1px solid rgba(0,170,255,0.3);
-    color:#fff;
-    padding:12px 22px;
-    border-radius:12px;
-    cursor:pointer;
-    margin:8px;
-    font-size:15px;
-    transition:transform .18s ease, box-shadow .18s ease;
-    position:relative;
-    overflow:hidden;
-  }
-  .btn:hover{ transform:translateY(-4px); box-shadow:0 8px 30px rgba(0,170,255,0.12); }
-  .btn:active{ transform:translateY(-1px) scale(.99); }
-
-  /* small buttons inside music control */
-  .btn-small{ padding:8px 12px; font-size:14px; border-radius:10px; }
-
-  .hidden{ display:none; }
-
-  /* answers container */
-  .answers{ margin-top:14px; display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
-
-  .answer-btn{
-    min-width:180px;
-    max-width:calc(50% - 20px);
-    background:rgba(255,255,255,0.03);
-    border:1px solid rgba(255,255,255,0.04);
-    color:#fff;
-    padding:10px 14px;
-    border-radius:12px;
-    cursor:pointer;
-    transition:all .22s ease;
-    font-size:14px;
-  }
-  .answer-btn:hover{ transform:translateY(-4px); box-shadow:0 10px 30px rgba(0,0,0,0.45); }
-  .answer-btn:disabled{ opacity:0.7; cursor:default; transform:none; }
-
-  /* progress */
-  .progress{
-    height:14px;
-    background:rgba(255,255,255,0.04);
-    border-radius:999px;
-    overflow:hidden;
-    margin:18px 0 8px;
-  }
-  .progress .fill{
-    height:100%;
-    width:0%;
-    background:linear-gradient(90deg,var(--accent1),var(--accent2));
-    transition:width .5s ease;
-  }
-
-  .meta{ font-size:14px; margin-top:8px; color:#dbe8ff; }
-
-  /* particles layer */
-  .particles{
-    position:fixed; inset:0; z-index:1; pointer-events:none;
-  }
-  .p{ position:absolute; border-radius:999px; opacity:.9; filter:blur(6px); mix-blend-mode:screen; }
-
-  /* transition screen */
-  .transition{
-    position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:6;
-    background:rgba(0,6,30,0.7);
-    color:#fff; font-size:22px; opacity:0; pointer-events:none; transition:opacity .45s ease;
-  }
-  .transition.show{ opacity:1; pointer-events:auto; }
-
-  /* responsive */
-  @media (max-width:640px){
-    .answer-btn{ min-width:100%; max-width:100%; }
-    .card{ padding:22px; }
-  }
+:root{
+  --bg1:#000000;
+  --bg2:#062a5f;
+  --bg3:#2f2f33;
+  --bg4:#dcdde1;
+  --accent1:#00aaff;
+  --accent2:#00ffcc;
+  --glass: rgba(255,255,255,0.06);
+}
+html,body{
+  height:100%;
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background: linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3),var(--bg4));
+  background-size:400% 400%;
+  animation:gradientMove 18s ease infinite;
+  color:#fff;
+  overflow:hidden;
+}
+@keyframes gradientMove{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+.wrap{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  box-sizing:border-box;
+  position:relative;
+  z-index:2;
+}
+.card{
+  width:100%;
+  max-width:760px;
+  background:var(--glass);
+  border-radius:18px;
+  padding:32px;
+  box-sizing:border-box;
+  backdrop-filter:blur(10px) saturate(120%);
+  box-shadow:0 8px 30px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.02);
+  text-align:center;
+  position:relative;
+}
+h1{ margin:0 0 8px 0; font-size:32px; letter-spacing:0.4px; }
+h3{ margin:0 0 18px 0; font-weight:500; color:#dfe6f0; font-size:15px; }
+.muted{ color:#d0d6e0; font-size:14px; margin-top:6px; }
+.btn{
+  display:inline-block;
+  background:linear-gradient(180deg, rgba(0,170,255,0.18), rgba(0,170,255,0.08));
+  border:1px solid rgba(0,170,255,0.3);
+  color:#fff;
+  padding:12px 22px;
+  border-radius:12px;
+  cursor:pointer;
+  margin:8px;
+  font-size:15px;
+  transition:transform .18s ease, box-shadow .18s ease;
+  position:relative;
+  overflow:hidden;
+}
+.btn:hover{ transform:translateY(-4px); box-shadow:0 8px 30px rgba(0,170,255,0.12); }
+.btn:active{ transform:translateY(-1px) scale(.99); }
+.btn-small{ padding:8px 12px; font-size:14px; border-radius:10px; }
+.hidden{ display:none; }
+.answers{ margin-top:14px; display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+.answer-btn{
+  min-width:180px;
+  max-width:calc(50% - 20px);
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.04);
+  color:#fff;
+  padding:10px 14px;
+  border-radius:12px;
+  cursor:pointer;
+  transition:all .22s ease;
+  font-size:14px;
+}
+.answer-btn:hover{ transform:translateY(-4px); box-shadow:0 10px 30px rgba(0,0,0,0.45); }
+.answer-btn:disabled{ opacity:0.7; cursor:default; transform:none; }
+.progress{
+  height:14px;
+  background:rgba(255,255,255,0.04);
+  border-radius:999px;
+  overflow:hidden;
+  margin:18px 0 8px;
+}
+.progress .fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  transition:width .5s ease;
+}
+.meta{ font-size:14px; margin-top:8px; color:#dbe8ff; }
+.particles{ position:fixed; inset:0; z-index:1; pointer-events:none; }
+.p{ position:absolute; border-radius:999px; opacity:.9; filter:blur(6px); mix-blend-mode:screen; }
+.transition{
+  position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:6;
+  background:rgba(0,6,30,0.7);
+  color:#fff; font-size:22px; opacity:0; pointer-events:none; transition:opacity .45s ease;
+}
+.transition.show{ opacity:1; pointer-events:auto; }
+@media (max-width:640px){
+  .answer-btn{ min-width:100%; max-width:100%; }
+  .card{ padding:22px; }
+}
 </style>
 </head>
 <body>
-  <!-- particles -->
-  <div class="particles" id="particles"></div>
-
-  <div class="wrap">
-    <!-- Start -->
-    <div class="card" id="startScreen">
-      <h1>Quiz</h1>
-      <h3>Criado por André, Pedro, Ian e Gabriel — 9º Ano B</h3>
-      <p class="muted">Escolha um tema inicial. Depois de cada tema, o próximo começa automaticamente até completar todos os 3 (30 perguntas).</p>
-      <div style="margin-top:18px;">
-        <button class="btn" onclick="startGame()">Começar</button>
-      </div>
-    </div>
-
-    <!-- Theme choose -->
-    <div class="card hidden" id="themeScreen">
-      <h1>Escolha um tema inicial</h1>
-      <div style="margin-top:14px;">
-        <button class="btn" onclick="selectTheme('Rito')">Rito</button>
-        <button class="btn" onclick="selectTheme('Mito')">Mito</button>
-        <button class="btn" onclick="selectTheme('Símbolo')">Símbolo</button>
-      </div>
-    </div>
-
-    <!-- Quiz -->
-    <div class="card hidden" id="quizScreen" aria-live="polite">
-      <h1 id="themeTitle">Tema</h1>
-      <p id="questionText" style="font-size:18px; margin-top:6px;">Pergunta</p>
-
-      <div class="answers" id="answersWrap"></div>
-
-      <div class="progress" aria-hidden="true">
-        <div class="fill" id="progressFill"></div>
-      </div>
-      <div class="meta" id="metaInfo">Pergunta x de 10</div>
-
-      <div style="margin-top:14px;">
-        <button class="btn btn-small hidden" id="nextBtn" onclick="nextQuestion()">Próxima</button>
-      </div>
-    </div>
-
-    <!-- final results shown inside quizScreen when finished -->
-  </div>
-
-  <!-- music controls -->
-  <div style="position:fixed; right:18px; bottom:18px; z-index:8;">
-    <div style="background:rgba(0,0,0,0.45); padding:10px 12px; border-radius:12px; backdrop-filter:blur(6px); box-shadow:0 8px 30px rgba(0,0,0,0.6);">
-      <button class="btn btn-small" onclick="toggleMusic()" id="playBtn">🔊</button>
-      <input type="range" id="vol" min="0" max="1" step="0.01" value="0.28" onchange="setVolume(this.value)" style="vertical-align:middle; width:120px; margin-left:8px;">
+<div class="particles" id="particles"></div>
+<div class="wrap">
+  <div class="card" id="startScreen">
+    <h1>Quiz</h1>
+    <h3>Criado por André, Pedro, Ian e Gabriel — 9º Ano B</h3>
+    <p class="muted">Escolha um tema inicial. Depois de cada tema, o próximo começa automaticamente até completar todos os 3 (30 perguntas).</p>
+    <div style="margin-top:18px;">
+      <button class="btn" onclick="startGame()">Começar</button>
     </div>
   </div>
 
-  <!-- transition overlay -->
-  <div class="transition" id="transitionOverlay">✨ Mudando para o próximo tema...</div>
+  <div class="card hidden" id="themeScreen">
+    <h1>Escolha um tema inicial</h1>
+    <div style="margin-top:14px;">
+      <button class="btn" onclick="selectTheme('Rito')">Rito</button>
+      <button class="btn" onclick="selectTheme('Mito')">Mito</button>
+      <button class="btn" onclick="selectTheme('Símbolo')">Símbolo</button>
+    </div>
+  </div>
 
-  <!-- audio -->
-  <audio id="bgAudio" loop>
-    <!-- lofi sample; if browser blocks autoplay, user can press play button -->
-    <source src="https://cdn.pixabay.com/download/audio/2021/10/11/audio_7f4b4b3c6c.mp3?filename=lofi-study-ambient-11285.mp3" type="audio/mpeg">
-  </audio>
+  <div class="card hidden" id="quizScreen" aria-live="polite">
+    <h1 id="themeTitle">Tema</h1>
+    <p id="questionText" style="font-size:18px; margin-top:6px;">Pergunta</p>
+    <div class="answers" id="answersWrap"></div>
+    <div class="progress" aria-hidden="true">
+      <div class="fill" id="progressFill"></div>
+    </div>
+    <div class="meta" id="metaInfo">Pergunta x de 10</div>
+    <div style="margin-top:14px;">
+      <button class="btn btn-small hidden" id="nextBtn" onclick="nextQuestion()">Próxima</button>
+    </div>
+  </div>
+</div>
 
-  <!-- sfx -->
-  <audio id="sfxCorrect" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
-  <audio id="sfxWrong" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
-  <audio id="sfxClick" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
+<div style="position:fixed; right:18px; bottom:18px; z-index:8;">
+  <div style="background:rgba(0,0,0,0.45); padding:10px 12px; border-radius:12px; backdrop-filter:blur(6px); box-shadow:0 8px 30px rgba(0,0,0,0.6);">
+    <button class="btn btn-small" onclick="toggleMusic()" id="playBtn">🔊</button>
+    <input type="range" id="vol" min="0" max="1" step="0.01" value="0.28" onchange="setVolume(this.value)" style="vertical-align:middle; width:120px; margin-left:8px;">
+  </div>
+</div>
+
+<div class="transition" id="transitionOverlay">✨ Mudando para o próximo tema...</div>
+
+<audio id="bgAudio" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2021/10/11/audio_7f4b4b3c6c.mp3?filename=lofi-study-ambient-11285.mp3" type="audio/mpeg">
+</audio>
+<audio id="sfxCorrect" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+<audio id="sfxWrong" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+<audio id="sfxClick" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
 
 <script>
 /* ======================
-   Helper / Utils
-   ====================== */
+   Utils
+====================== */
 function shuffleArray(a){
-  // Fisher-Yates
   const arr = a.slice();
   for(let i=arr.length-1;i>0;i--){
     const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
+    [arr[i],arr[j]]=[arr[j],arr[i]];
   }
   return arr;
 }
 
 /* ======================
-   Particles background
-   ====================== */
+   Particles
+====================== */
 const particlesEl = document.getElementById('particles');
 (function createParticles(){
   const colors = ['rgba(0,170,255,0.08)','rgba(0,255,204,0.06)','rgba(255,255,255,0.04)'];
   const count = 28;
   const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
   for(let i=0;i<count;i++){
-    const p = document.createElement('div');
-    p.className = 'p';
-    const size = Math.random()*40 + 10;
-    p.style.width = size + 'px';
-    p.style.height = size + 'px';
-    p.style.left = (Math.random()*100) + 'vw';
-    p.style.top = (Math.random()*110) + 'vh';
-    p.style.background = colors[i % colors.length];
-    p.style.opacity = (Math.random()*0.6 + 0.08).toString();
-    p.style.transform = `translate3d(0,0,0)`;
-    p.style.transition = `transform ${10 + Math.random()*18}s linear, opacity 8s ease`;
+    const p=document.createElement('div');
+    p.className='p';
+    const size=Math.random()*40+10;
+    p.style.width=size+'px';
+    p.style.height=size+'px';
+    p.style.left=(Math.random()*100)+'vw';
+    p.style.top=(Math.random()*110)+'vh';
+    p.style.background=colors[i % colors.length];
+    p.style.opacity=(Math.random()*0.6+0.08).toString();
     particlesEl.appendChild(p);
-    // animate vertical drift
     (function drift(elem){
-      const dur = 12000 + Math.random()*16000;
-      const toY = - (vw * (0.3 + Math.random()*1.8));
-      elem.animate([{ transform: `translateY(0px)` }, { transform: `translateY(${toY}px)` }], { duration: dur, iterations: Infinity });
+      const dur = 12000+Math.random()*16000;
+      const toY = -(vw*(0.3+Math.random()*1.8));
+      elem.animate([{transform:'translateY(0px)'},{transform:`translateY(${toY}px)`}],{duration:dur,iterations:Infinity});
     })(p);
   }
 })();
 
 /* ======================
-   Quiz data (10 perguntas por tema)
-   ====================== */
-const quizData = {
-  "Rito": [
-    { q:"O que é um rito?", a:["Uma prática simbólica repetida","Um ser espiritual","Um lugar sagrado","Uma história mística"], correct:0 },
-    { q:"Os ritos geralmente expressam:", a:["A cultura e fé de um grupo","Somente diversão","Fatos científicos","Curiosidades históricas"], correct:0 },
-    { q:"Qual destes é um exemplo de rito?", a:["Casamento","Matemática","Pintura","Sonho"], correct:0 },
-    { q:"Ritos são frequentemente ligados a:", a:["Tradições e cerimônias","Jogos e apostas","Viagens e turismo","Estudos científicos"], correct:0 },
-    { q:"Ritos podem marcar:", a:["Passagens da vida","O tempo do dia","O clima","A política"], correct:0 },
-    { q:"Um rito pode ser considerado:", a:["Ato simbólico e significativo","Algo sem importância","Um erro cultural","Somente religião"], correct:0 },
-    { q:"Ritos podem reforçar:", a:["Identidade e união social","Desigualdade","Ignorância","Conflito"], correct:0 },
-    { q:"Em religiões, o rito serve para:", a:["Ligar o humano ao sagrado","Ensinar matemática","Contar histórias","Divertir"], correct:0 },
-    { q:"Ritos são diferentes conforme:", a:["A cultura e crença","O clima","A política","A tecnologia"], correct:0 },
-    { q:"Um exemplo de rito de passagem é:", a:["Formatura","Trabalho","Leitura","Alimentação"], correct:0 }
+   Quiz data
+====================== */
+const quizData={
+  "Rito":[
+    {q:"O que é um rito?", a:["Uma prática simbólica repetida","Um ser espiritual","Um lugar sagrado","Uma história mística"], correct:0},
+    {q:"Os ritos geralmente expressam:", a:["A cultura e fé de um grupo","Somente diversão","Fatos científicos","Curiosidades históricas"], correct:0},
+    {q:"Qual destes é um exemplo de rito?", a:["Casamento","Matemática","Pintura","Sonho"], correct:0},
+    {q:"Ritos são frequentemente ligados a:", a:["Tradições e cerimônias","Jogos e apostas","Viagens e turismo","Estudos científicos"], correct:0},
+    {q:"Ritos podem marcar:", a:["Passagens da vida","O tempo do dia","O clima","A política"], correct:0},
+    {q:"Um rito pode ser considerado:", a:["Ato simbólico e significativo","Algo sem importância","Um erro cultural","Somente religião"], correct:0},
+    {q:"Ritos podem reforçar:", a:["Identidade e união social","Desigualdade","Ignorância","Conflito"], correct:0},
+    {q:"Em religiões, o rito serve para:", a:["Ligar o humano ao sagrado","Ensinar matemática","Contar histórias","Divertir"], correct:0},
+    {q:"Ritos são diferentes conforme:", a:["A cultura e crença","O clima","A política","A tecnologia"], correct:0},
+    {q:"Um exemplo de rito de passagem é:", a:["Formatura","Trabalho","Leitura","Alimentação"], correct:0}
   ],
-  "Mito": [
-    { q:"O que é um mito?", a:["Uma narrativa simbólica","Um fato científico","Uma lei política","Uma invenção moderna"], correct:0 },
-    { q:"Mitos explicam:", a:["A origem e o sentido das coisas","A economia","A tecnologia","A matemática"], correct:0 },
-    { q:"Os mitos são comuns em:", a:["Todas as culturas","Apenas na Grécia","Somente na Ásia","Nenhuma"], correct:0 },
-    { q:"Um herói mitológico representa:", a:["Valores humanos","Dinheiro","Política","Ciência"], correct:0 },
-    { q:"Os mitos geralmente têm:", a:["Deuses e forças sobrenaturais","Animais de estimação","Máquinas","Números"], correct:0 },
-    { q:"O mito serve para:", a:["Dar sentido à realidade","Ensinar matemática","Registrar fatos reais","Controlar o clima"], correct:0 },
-    { q:"Um exemplo de mito famoso é:", a:["Prometeu","Einstein","Newton","Tesla"], correct:0 },
-    { q:"Os mitos podem ser contados por meio de:", a:["Palavras e rituais","Somente livros","Computadores","Televisão"], correct:0 },
-    { q:"O mito e o símbolo se relacionam porque:", a:["Ambos expressam significados profundos","São opostos","Não se ligam","São ciências"], correct:0 },
-    { q:"O mito do dilúvio representa:", a:["Renovação e purificação","Destruição sem sentido","Fome","Inverno"], correct:0 }
+  "Mito":[
+    {q:"O que é um mito?", a:["Uma narrativa simbólica","Um fato científico","Uma lei política","Uma invenção moderna"], correct:0},
+    {q:"Mitos explicam:", a:["A origem e o sentido das coisas","A economia","A tecnologia","A matemática"], correct:0},
+    {q:"Os mitos são comuns em:", a:["Todas as culturas","Apenas na Grécia","Somente na Ásia","Nenhuma"], correct:0},
+    {q:"Um herói mitológico representa:", a:["Valores humanos","Dinheiro","Política","Ciência"], correct:0},
+    {q:"Os mitos geralmente têm:", a:["Deuses e forças sobrenaturais","Animais de estimação","Máquinas","Números"], correct:0},
+    {q:"O mito serve para:", a:["Dar sentido à realidade","Ensinar matemática","Registrar fatos reais","Controlar o clima"], correct:0},
+    {q:"Um exemplo de mito famoso é:", a:["Prometeu","Einstein","Newton","Tesla"], correct:0},
+    {q:"Os mitos podem ser contados por meio de:", a:["Palavras e rituais","Somente livros","Computadores","Televisão"], correct:0},
+    {q:"O mito e o símbolo se relacionam porque:", a:["Ambos expressam significados profundos","São opostos","Não se ligam","São ciências"], correct:0},
+    {q:"O mito do dilúvio representa:", a:["Renovação e purificação","Destruição sem sentido","Fome","Inverno"], correct:0}
   ],
-  "Símbolo": [
-    { q:"O que é um símbolo?", a:["Representação de uma ideia","Um objeto comum","Um som qualquer","Um tipo de rito"], correct:0 },
-    { q:"Símbolos são usados para:", a:["Transmitir significados","Comer","Dormir","Escrever"], correct:0 },
-    { q:"O símbolo da paz é:", a:["O círculo com ramos","Uma estrela","Uma chama","Um triângulo"], correct:0 },
-    { q:"Símbolos religiosos representam:", a:["O sagrado e suas crenças","Cidades","Lugares turísticos","Números"], correct:0 },
-    { q:"A cruz é símbolo de:", a:["Cristianismo","Budismo","Islã","Hinduísmo"], correct:0 },
-    { q:"Um símbolo pode ser:", a:["Imagem, som ou gesto","Somente objeto","Somente palavra","Somente cor"], correct:0 },
-    { q:"Símbolos unem pessoas porque:", a:["Compartilham significados","São bonitos","São raros","São misteriosos"], correct:0 },
-    { q:"As cores também são símbolos de:", a:["Emoções e ideias","Somente arte","Matemática","Ruído"], correct:0 },
-    { q:"O símbolo do coração representa:", a:["Amor","Medo","Fome","Tempo"], correct:0 },
-    { q:"Símbolos podem mudar de sentido conforme:", a:["A cultura","O clima","O idioma","O tamanho"], correct:0 }
+  "Símbolo":[
+    {q:"O que é um símbolo?", a:["Representação de uma ideia","Um objeto comum","Um som qualquer","Um tipo de rito"], correct:0},
+    {q:"Símbolos são usados para:", a:["Transmitir significados","Comer","Dormir","Escrever"], correct:0},
+    {q:"O símbolo da paz é:", a:["O círculo com ramos","Uma estrela","Uma chama","Um triângulo"], correct:0},
+    {q:"Símbolos religiosos representam:", a:["O sagrado e suas crenças","Cidades","Lugares turísticos","Números"], correct:0},
+    {q:"A cruz é símbolo de:", a:["Cristianismo","Budismo","Islã","Hinduísmo"], correct:0},
+    {q:"Um símbolo pode ser:", a:["Imagem, som ou gesto","Somente objeto","Somente palavra","Somente cor"], correct:0},
+    {q:"Símbolos unem pessoas porque:", a:["Compartilham significados","São bonitos","São raros","São misteriosos"], correct:0},
+    {q:"As cores também são símbolos de:", a:["Emoções e ideias","Somente arte","Matemática","Ruído"], correct:0},
+    {q:"O símbolo do coração representa:", a:["Amor","Medo","Fome","Tempo"], correct:0},
+    {q:"Símbolos podem mudar de sentido conforme:", a:["A cultura","O clima","O idioma","O tamanho"], correct:0}
   ]
 };
 
 /* ======================
    State
-   ====================== */
-let orderThemes = [];           // ordered themes sequence (3)
-let currentThemeIdx = 0;       // index in orderThemes
-let currentTheme = "";         // name of theme
-let questionIndex = 0;         // 0..9 per theme
-let scoreThisTheme = 0;        // correct count in current theme
-let totalScore = 0;            // across themes
-let shuffledPerTheme = {};     // store shuffled arrays per theme so order is stable while playing
+====================== */
+let orderThemes=[], currentThemeIdx=0, currentTheme="", questionIndex=0, scoreThisTheme=0, totalScore=0, shuffledPerTheme={};
 
-/* UI refs */
-const startScreen = document.getElementById('startScreen');
-const themeScreen = document.getElementById('themeScreen');
-const quizScreen = document.getElementById('quizScreen');
-const themeTitle = document.getElementById('themeTitle');
-const questionText = document.getElementById('questionText');
-const answersWrap = document.getElementById('answersWrap');
-const progressFill = document.getElementById('progressFill');
-const metaInfo = document.getElementById('metaInfo');
-const nextBtn = document.getElementById('nextBtn');
-const transitionOverlay = document.getElementById('transitionOverlay');
-
-/* audio */
-const bgAudio = document.getElementById('bgAudio');
-const sfxCorrect = document.getElementById('sfxCorrect');
-const sfxWrong = document.getElementById('sfxWrong');
-const sfxClick = document.getElementById('sfxClick');
-
-/* initialize audio volume from control */
-document.getElementById('vol').value = 0.28;
-bgAudio.volume = 0.28;
+const startScreen=document.getElementById('startScreen');
+const themeScreen=document.getElementById('themeScreen');
+const quizScreen=document.getElementById('quizScreen');
+const themeTitle=document.getElementById('themeTitle');
+const questionText=document.getElementById('questionText');
+const answersWrap=document.getElementById('answersWrap');
+const progressFill=document.getElementById('progressFill');
+const metaInfo=document.getElementById('metaInfo');
+const nextBtn=document.getElementById('nextBtn');
+const transitionOverlay=document.getElementById('transitionOverlay');
+const bgAudio=document.getElementById('bgAudio');
+const sfxCorrect=document.getElementById('sfxCorrect');
+const sfxWrong=document.getElementById('sfxWrong');
+const sfxClick=document.getElementById('sfxClick');
+document.getElementById('vol').value=0.28;
+bgAudio.volume=0.28;
 
 /* ======================
-   Flow control functions
-   ====================== */
-
-function startGame(){
-  sfxClick.play().catch(()=>{});
-  // go to theme select
-  startScreen.classList.add('hidden');
-  themeScreen.classList.remove('hidden');
-}
-
+   Flow control
+====================== */
+function startGame(){sfxClick.play().catch(()=>{}); startScreen.classList.add('hidden'); themeScreen.classList.remove('hidden');}
 function selectTheme(themeName){
   sfxClick.play().catch(()=>{});
-  // build order starting from selected
-  const base = ["Rito","Mito","Símbolo"];
-  const si = base.indexOf(themeName);
-  orderThemes = base.slice(si).concat(base.slice(0,si));
-  currentThemeIdx = 0;
-  totalScore = 0;
-  shuffledPerTheme = {}; // clear previous shuffles
-  // pre-shuffle each theme's questions (so each theme has a randomized set)
-  for(const t of base){
-    shuffledPerTheme[t] = shuffleArray(quizData[t]);
-  }
+  const base=["Rito","Mito","Símbolo"];
+  const si=base.indexOf(themeName);
+  orderThemes=base.slice(si).concat(base.slice(0,si));
+  currentThemeIdx=0; totalScore=0; shuffledPerTheme={};
+  for(const t of base) shuffledPerTheme[t]=shuffleArray(quizData[t]);
   themeScreen.classList.add('hidden');
-  // start first theme with small delay
-  setTimeout(()=> {
-    quizScreen.classList.remove('hidden');
-    startTheme();
-  }, 250);
+  setTimeout(()=>{quizScreen.classList.remove('hidden'); startTheme();},250);
 }
-
 function startTheme(){
-  currentTheme = orderThemes[currentThemeIdx];
-  questionIndex = 0;
-  scoreThisTheme = 0;
-  // ensure shuffled array has exactly 10 (already 10 but keep safe)
-  const arr = shuffledPerTheme[currentTheme].slice(0,10);
-  shuffledPerTheme[currentTheme] = arr;
+  currentTheme=orderThemes[currentThemeIdx]; questionIndex=0; scoreThisTheme=0;
+  const arr=shuffledPerTheme[currentTheme].slice(0,10);
+  shuffledPerTheme[currentTheme]=arr;
   renderQuestion();
 }
-
 function renderQuestion(){
-  const q = shuffledPerTheme[currentTheme][questionIndex];
-  themeTitle.textContent = currentTheme;
-  questionText.textContent = q.q;
-  answersWrap.innerHTML = '';
-  // create answer buttons
-  q.a.forEach((a,i)=>{
-    const btn = document.createElement('button');
-    btn.className = 'answer-btn';
-    btn.textContent = a;
-    btn.onclick = ()=> selectAnswer(i, btn);
+  const q=shuffledPerTheme[currentTheme][questionIndex];
+  themeTitle.textContent=currentTheme; questionText.textContent=q.q; answersWrap.innerHTML='';
+  const answerObjs=q.a.map((text,idx)=>({text,idx}));
+  const shuffledAnswers=shuffleArray(answerObjs);
+  shuffledAnswers.forEach(aObj=>{
+    const btn=document.createElement('button');
+    btn.className='answer-btn';
+    btn.textContent=aObj.text;
+    btn.onclick=()=>selectAnswer(aObj.idx,btn);
     answersWrap.appendChild(btn);
   });
-  // progress for this theme
-  progressFill.style.width = `${(questionIndex / 10) * 100}%`;
-  metaInfo.textContent = `Pergunta ${questionIndex+1} de 10 — Tema: ${currentTheme}`;
+  progressFill.style.width=`${(questionIndex/10)*100}%`;
+  metaInfo.textContent=`Pergunta ${questionIndex+1} de 10 — Tema: ${currentTheme}`;
   nextBtn.classList.add('hidden');
 }
-
-function selectAnswer(index, btnEl){
-  // disable all
-  const q = shuffledPerTheme[currentTheme][questionIndex];
-  const btns = answersWrap.querySelectorAll('button');
-  btns.forEach((b, i)=>{
-    b.disabled = true;
-    // indicate correct/incorrect visuals
-    if(i === q.correct) {
-      b.style.background = 'linear-gradient(90deg, #00ff99, #88ffcc)';
-      b.style.color = '#053';
-    }
-    if(i === index && i !== q.correct){
-      b.style.background = 'linear-gradient(90deg, #ff6b6b, #ff9b9b)';
-      b.style.color = '#400';
-    }
+function selectAnswer(index,btnEl){
+  const q=shuffledPerTheme[currentTheme][questionIndex];
+  const btns=answersWrap.querySelectorAll('button');
+  btns.forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.correct){b.style.background='linear-gradient(90deg,#00ff99,#88ffcc)';b.style.color='#053';}
+    if(i===index && i!==q.correct){b.style.background='linear-gradient(90deg,#ff6b6b,#ff9b9b)';b.style.color='#400';}
   });
-
-  if(index === q.correct){
-    scoreThisTheme++;
-    sfxCorrect.currentTime = 0; sfxCorrect.play().catch(()=>{});
-  } else {
-    sfxWrong.currentTime = 0; sfxWrong.play().catch(()=>{});
-  }
-  sfxClick.currentTime = 0; sfxClick.play().catch(()=>{});
+  if(index===q.correct){scoreThisTheme++; sfxCorrect.currentTime=0; sfxCorrect.play().catch(()=>{});}
+  else {sfxWrong.currentTime=0; sfxWrong.play().catch(()=>{});}
+  sfxClick.currentTime=0; sfxClick.play().catch(()=>{});
   nextBtn.classList.remove('hidden');
 }
-
 function nextQuestion(){
-  sfxClick.currentTime = 0; sfxClick.play().catch(()=>{});
+  sfxClick.currentTime=0; sfxClick.play().catch(()=>{});
   questionIndex++;
-  if(questionIndex < 10){
-    renderQuestion();
-  } else {
-    finishTheme();
-  }
+  if(questionIndex<10) renderQuestion();
+  else finishTheme();
 }
-
 function finishTheme(){
-  totalScore += scoreThisTheme;
-  currentThemeIdx++;
-  if(currentThemeIdx < orderThemes.length){
-    // show transition overlay, then start next theme
-    showTransition(`✨ Mudando para: ${orderThemes[currentThemeIdx]}...`, ()=>{
-      startTheme();
-    });
-  } else {
-    // finished all themes — show final summary
-    showResults();
-  }
+  totalScore+=scoreThisTheme; currentThemeIdx++;
+  if(currentThemeIdx<orderThemes.length) showTransition(`✨ Mudando para: ${orderThemes[currentThemeIdx]}...`,()=>{startTheme();});
+  else showResults();
 }
-
-/* transition with callback after delay */
-function showTransition(text, callback){
-  transitionOverlay.textContent = text;
-  transitionOverlay.classList.add('show');
-  // fade duration visible for 2.2s
-  setTimeout(()=>{
-    transitionOverlay.classList.remove('show');
-    setTimeout(()=> {
-      callback();
-    }, 350);
-  }, 2200);
+function showTransition(text,callback){transitionOverlay.textContent=text; transitionOverlay.classList.add('show');
+  setTimeout(()=>{transitionOverlay.classList.remove('show'); setTimeout(()=>{callback();},350);},2200);
 }
-
 function showResults(){
-  // total questions count = sum lengths of each theme (we use 10 per theme = 30)
-  const totalQuestions = Object.keys(shuffledPerTheme).length === 3 ? 30 : Object.values(quizData).flat().length;
-  let remark = '';
-  const pct = Math.round((totalScore/totalQuestions)*100);
-  if(pct === 100) remark = 'Incrível — gênio total! 🌟';
-  else if(pct >= 80) remark = 'Excelente! Muito bem! 🎉';
-  else if(pct >= 50) remark = 'Bom trabalho — pode melhorar! 💪';
-  else remark = 'Continue praticando — você consegue! ✨';
-
-  quizScreen.innerHTML = `
+  const totalQuestions=30; let remark=''; const pct=Math.round((totalScore/totalQuestions)*100);
+  if(pct===100) remark='Incrível — gênio total! 🌟';
+  else if(pct>=80) remark='Excelente! Muito bem! 🎉';
+  else if(pct>=50) remark='Bom trabalho — pode melhorar! 💪';
+  else remark='Continue praticando — você consegue! ✨';
+  quizScreen.innerHTML=`
     <h1>🎉 Quiz Concluído</h1>
     <p style="font-size:18px; margin-top:6px;">Você acertou <strong>${totalScore}</strong> de ${totalQuestions} perguntas.</p>
     <p class="muted" style="margin-top:8px;">${remark}</p>
@@ -475,52 +351,13 @@ function showResults(){
     <p class="muted" style="margin-top:16px; font-size:13px;">Criadores: André, Pedro, Ian e Gabriel — 9º Ano B</p>
   `;
 }
+function backToStart(){sfxClick.play().catch(()=>{}); quizScreen.classList.add('hidden'); themeScreen.classList.add('hidden'); startScreen.classList.remove('hidden');}
+function restartAll(){sfxClick.play().catch(()=>{}); quizScreen.classList.add('hidden'); themeScreen.classList.remove('hidden'); shuffledPerTheme={}; orderThemes=[]; currentThemeIdx=0; questionIndex=0; scoreThisTheme=0; totalScore=0;}
 
-/* restart to pick theme again */
-function backToStart(){
-  sfxClick.play().catch(()=>{});
-  quizScreen.classList.add('hidden');
-  themeScreen.classList.add('hidden');
-  startScreen.classList.remove('hidden');
-}
-
-/* restart whole quiz using same selected start (go to theme screen) */
-function restartAll(){
-  sfxClick.play().catch(()=>{});
-  // rebuild UI to theme screen
-  quizScreen.classList.add('hidden');
-  themeScreen.classList.remove('hidden');
-  // reset state
-  shuffledPerTheme = {};
-  orderThemes = [];
-  currentThemeIdx = 0;
-  questionIndex = 0;
-  scoreThisTheme = 0;
-  totalScore = 0;
-}
-
-/* ================
-   Audio controls
-   ================ */
-function toggleMusic(){
-  if(bgAudio.paused){
-    bgAudio.play().catch(()=>{});
-    document.getElementById('playBtn').textContent = '🔊';
-  } else {
-    bgAudio.pause();
-    document.getElementById('playBtn').textContent = '🔈';
-  }
-}
-function setVolume(v){
-  bgAudio.volume = Number(v);
-}
-
-/* attempt autoplay; browsers may block until user interacts */
-document.addEventListener('click', ()=> {
-  if(bgAudio.paused){
-    bgAudio.play().catch(()=>{});
-  }
-}, {once:true});
+/* Audio */
+function toggleMusic(){if(bgAudio.paused){bgAudio.play().catch(()=>{});document.getElementById('playBtn').textContent='🔊';}else{bgAudio.pause();document.getElementById('playBtn').textContent='🔈';}}
+function setVolume(v){bgAudio.volume=Number(v);}
+document.addEventListener('click',()=>{if(bgAudio.paused){bgAudio.play().catch(()=>{});}}, {once:true});
 </script>
 </body>
 </html>
