@@ -3,136 +3,235 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz Azul e Branco</title>
+<title>Quiz</title>
+
 <style>
-  body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #0a2a88, #00aaff);
-    color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+  html, body {
     margin: 0;
-    text-align: center;
+    padding: 0;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    color: #fff;
+    background: linear-gradient(135deg, #000, #0a2a88, #333, #ccc);
+    background-size: 400% 400%;
+    animation: gradientMove 12s ease infinite;
+  }
+
+  @keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
   }
 
   .container {
-    background: rgba(255, 255, 255, 0.1);
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 20px;
-    padding: 30px;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
     width: 90%;
     max-width: 600px;
-    box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
-    animation: fadeIn 1s ease;
+    margin: auto;
+    padding: 40px;
+    text-align: center;
+    animation: fadeIn 1s ease forwards;
   }
 
-  h1, h2 {
-    margin-bottom: 20px;
+  h1, h2, h3, p {
+    margin: 10px 0;
   }
 
   button {
-    background: #fff;
-    color: #0a2a88;
-    border: none;
+    background: rgba(0, 140, 255, 0.15);
+    color: #fff;
+    border: 1px solid #00aaff;
     border-radius: 10px;
     padding: 12px 25px;
-    margin: 8px;
     font-size: 1.1em;
+    margin: 10px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
   }
 
   button:hover {
-    background: #00aaff;
-    color: #fff;
-    box-shadow: 0 0 10px #00aaff;
+    background: rgba(0, 140, 255, 0.3);
+    box-shadow: 0 0 15px #00aaff, 0 0 25px #0077ff inset;
+    transform: scale(1.05);
   }
 
-  .hidden {
-    display: none;
+  .hidden { display: none; }
+
+  .particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .particle {
+    position: absolute;
+    background: radial-gradient(circle, #fff, transparent);
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: float 10s linear infinite;
+  }
+
+  @keyframes float {
+    from { transform: translateY(100vh) scale(0.5); opacity: 0.8; }
+    to { transform: translateY(-10vh) scale(1.2); opacity: 0; }
   }
 
   @keyframes fadeIn {
-    from {opacity: 0; transform: translateY(20px);}
-    to {opacity: 1; transform: translateY(0);}
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  .progress {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    height: 12px;
+    margin: 15px 0;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    background: linear-gradient(90deg, #00aaff, #00ffcc);
+    width: 0%;
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.5s ease;
+  }
+
+  .music-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0,0,0,0.5);
+    padding: 10px 15px;
+    border-radius: 15px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 10px #00aaff;
+    z-index: 3;
+  }
+
+  .music-controls button {
+    font-size: 1em;
+    padding: 8px 15px;
+    margin: 0 5px;
+  }
+
+  .transition-screen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,30,0.85);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8em;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease;
+  }
+
+  .transition-screen.active {
+    opacity: 1;
+    pointer-events: all;
   }
 </style>
 </head>
 <body>
 
+<div class="particles" id="particles"></div>
+
 <div class="container" id="start-screen">
-  <h1>Quiz Azul e Branco</h1>
-  <h3>Criado por André, Pedro, Ian e Gabriel – 9º Ano B</h3>
+  <h1>Quiz</h1>
   <button onclick="startGame()">Começar</button>
 </div>
 
 <div class="container hidden" id="theme-screen">
-  <h2>Escolha um tema para começar</h2>
+  <h2>Escolha um tema inicial</h2>
   <button onclick="selectTheme('Rito')">Rito</button>
   <button onclick="selectTheme('Símbolo')">Símbolo</button>
   <button onclick="selectTheme('Mito')">Mito</button>
 </div>
 
 <div class="container hidden" id="quiz">
-  <h1 id="theme">Tema</h1>
+  <h2 id="theme">Tema</h2>
   <p id="question">Pergunta</p>
   <div id="answers"></div>
+  <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
   <p id="progress"></p>
   <button id="nextBtn" class="hidden">Próxima</button>
 </div>
 
-<audio id="correctSound">
-  <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
+<div class="music-controls">
+  <button onclick="toggleMusic()">🎵</button>
+  <input type="range" id="volume" min="0" max="1" step="0.05" value="0.3" onchange="setVolume(this.value)">
+</div>
+
+<div class="transition-screen" id="transition">
+  ✨ Mudando para o próximo tema...
+</div>
+
+<audio id="bgMusic" loop autoplay>
+  <source src="https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/lofi_study/Chillhop_Beats_-_Calm_Vibes.mp3" type="audio/mpeg">
 </audio>
-<audio id="wrongSound">
-  <source src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" type="audio/ogg">
-</audio>
+<audio id="correctSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+<audio id="wrongSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+<audio id="clickSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
 
 <script>
+/* === Fundo de partículas === */
+const particleContainer = document.getElementById('particles');
+for (let i = 0; i < 60; i++) {
+  const particle = document.createElement('div');
+  particle.classList.add('particle');
+  const size = Math.random() * 6 + 2;
+  particle.style.width = size + 'px';
+  particle.style.height = size + 'px';
+  particle.style.left = Math.random() * 100 + 'vw';
+  particle.style.animationDuration = 8 + Math.random() * 6 + 's';
+  particleContainer.appendChild(particle);
+}
+
+/* === Dados === */
 const quizData = {
   "Rito": [
     { q: "O que é um rito?", a: ["Uma prática simbólica repetida", "Um ser espiritual", "Um lugar sagrado", "Uma história mística"], correct: 0 },
     { q: "Os ritos geralmente expressam:", a: ["A cultura e fé de um grupo", "Somente diversão", "Fatos científicos", "Curiosidades históricas"], correct: 0 },
-    { q: "Qual destes é um exemplo de rito?", a: ["Casamento", "Matemática", "Pintura", "Sonho"], correct: 0 },
-    { q: "Ritos são frequentemente ligados a:", a: ["Tradições e cerimônias", "Jogos e apostas", "Viagens e turismo", "Estudos científicos"], correct: 0 },
-    { q: "Ritos podem marcar:", a: ["Passagens da vida", "O tempo do dia", "O clima", "A política"], correct: 0 },
-    { q: "Um rito pode ser considerado:", a: ["Ato simbólico e significativo", "Algo sem importância", "Um erro cultural", "Somente religião"], correct: 0 },
-    { q: "Ritos podem reforçar:", a: ["Identidade e união social", "Desigualdade", "Ignorância", "Conflito"], correct: 0 },
-    { q: "Em religiões, o rito serve para:", a: ["Ligar o humano ao sagrado", "Ensinar matemática", "Contar histórias", "Divertir"], correct: 0 },
-    { q: "Ritos são diferentes conforme:", a: ["A cultura e crença", "O clima", "A política", "A tecnologia"], correct: 0 },
-    { q: "Um exemplo de rito de passagem é:", a: ["Formatura", "Trabalho", "Leitura", "Alimentação"], correct: 0 }
   ],
   "Símbolo": [
     { q: "O que é um símbolo?", a: ["Representação de uma ideia", "Um objeto comum", "Um som qualquer", "Um tipo de rito"], correct: 0 },
     { q: "Símbolos são usados para:", a: ["Transmitir significados", "Comer", "Dormir", "Escrever"], correct: 0 },
-    { q: "O símbolo da paz é:", a: ["O círculo com ramos", "Uma estrela", "Uma chama", "Um triângulo"], correct: 0 },
-    { q: "Símbolos religiosos representam:", a: ["O sagrado e suas crenças", "Cidades", "Lugares turísticos", "Números"], correct: 0 },
-    { q: "A cruz é símbolo de:", a: ["Cristianismo", "Budismo", "Islã", "Hinduísmo"], correct: 0 },
-    { q: "Um símbolo pode ser:", a: ["Imagem, som ou gesto", "Somente objeto", "Somente palavra", "Somente cor"], correct: 0 },
-    { q: "Símbolos unem pessoas porque:", a: ["Compartilham significados", "São bonitos", "São raros", "São misteriosos"], correct: 0 },
-    { q: "As cores também são símbolos de:", a: ["Emoções e ideias", "Somente arte", "Matemática", "Ruído"], correct: 0 },
-    { q: "O símbolo do coração representa:", a: ["Amor", "Medo", "Fome", "Tempo"], correct: 0 },
-    { q: "Símbolos podem mudar de sentido conforme:", a: ["A cultura", "O clima", "O idioma", "O tamanho"], correct: 0 }
   ],
   "Mito": [
     { q: "O que é um mito?", a: ["Uma narrativa simbólica", "Um fato científico", "Uma lei política", "Uma invenção moderna"], correct: 0 },
     { q: "Mitos explicam:", a: ["A origem e o sentido das coisas", "A economia", "A tecnologia", "A matemática"], correct: 0 },
-    { q: "Os mitos são comuns em:", a: ["Todas as culturas", "Apenas na Grécia", "Somente na Ásia", "Nenhuma"], correct: 0 },
-    { q: "Um herói mitológico representa:", a: ["Valores humanos", "Dinheiro", "Política", "Ciência"], correct: 0 },
-    { q: "Os mitos geralmente têm:", a: ["Deuses e forças sobrenaturais", "Animais de estimação", "Máquinas", "Números"], correct: 0 },
-    { q: "O mito serve para:", a: ["Dar sentido à realidade", "Ensinar matemática", "Registrar fatos reais", "Controlar o clima"], correct: 0 },
-    { q: "Um exemplo de mito famoso é:", a: ["Prometeu", "Einstein", "Newton", "Tesla"], correct: 0 },
-    { q: "Os mitos podem ser contados por meio de:", a: ["Palavras e rituais", "Somente livros", "Computadores", "Televisão"], correct: 0 },
-    { q: "O mito e o símbolo se relacionam porque:", a: ["Ambos expressam significados profundos", "São opostos", "Não se ligam", "São ciências"], correct: 0 },
-    { q: "O mito do dilúvio representa:", a: ["Renovação e purificação", "Destruição sem sentido", "Fome", "Inverno"], correct: 0 }
   ]
 };
 
+let themesOrder = [];
+let currentThemeIndex = 0;
 let theme = "";
 let questionIndex = 0;
 let score = 0;
+let totalScore = 0;
 
 const startScreen = document.getElementById('start-screen');
 const themeScreen = document.getElementById('theme-screen');
@@ -142,18 +241,34 @@ const questionEl = document.getElementById('question');
 const answersEl = document.getElementById('answers');
 const progressEl = document.getElementById('progress');
 const nextBtn = document.getElementById('nextBtn');
+const progressFill = document.getElementById('progressFill');
 const correctSound = document.getElementById('correctSound');
 const wrongSound = document.getElementById('wrongSound');
+const clickSound = document.getElementById('clickSound');
+const bgMusic = document.getElementById('bgMusic');
+const transition = document.getElementById('transition');
 
 function startGame() {
+  clickSound.play();
   startScreen.classList.add('hidden');
   themeScreen.classList.remove('hidden');
 }
 
 function selectTheme(selected) {
-  theme = selected;
+  clickSound.play();
+  const order = ["Rito", "Símbolo", "Mito"];
+  const startIndex = order.indexOf(selected);
+  themesOrder = [...order.slice(startIndex), ...order.slice(0, startIndex)];
+
+  currentThemeIndex = 0;
+  totalScore = 0;
   themeScreen.classList.add('hidden');
   quiz.classList.remove('hidden');
+  startTheme();
+}
+
+function startTheme() {
+  theme = themesOrder[currentThemeIndex];
   questionIndex = 0;
   score = 0;
   loadQuestion();
@@ -164,14 +279,14 @@ function loadQuestion() {
   themeEl.textContent = theme;
   questionEl.textContent = current.q;
   answersEl.innerHTML = '';
-  progressEl.textContent = `Pergunta ${questionIndex + 1} de 10 (${theme})`;
-
+  progressEl.textContent = `Pergunta ${questionIndex + 1} de ${quizData[theme].length}`;
   current.a.forEach((answer, i) => {
     const btn = document.createElement('button');
     btn.textContent = answer;
     btn.onclick = () => checkAnswer(i);
     answersEl.appendChild(btn);
   });
+  progressFill.style.width = ((questionIndex / quizData[theme].length) * 100) + '%';
   nextBtn.classList.add('hidden');
 }
 
@@ -180,43 +295,55 @@ function checkAnswer(selected) {
   const buttons = answersEl.querySelectorAll('button');
   buttons.forEach((btn, i) => {
     btn.disabled = true;
-    if (i === current.correct) {
-      btn.style.background = '#00ff99';
-    }
-    if (i === selected && i !== current.correct) {
-      btn.style.background = '#ff4444';
-    }
+    if (i === current.correct) btn.style.background = '#00ff99';
+    if (i === selected && i !== current.correct) btn.style.background = '#ff4444';
   });
-
-  if (selected === current.correct) {
-    score++;
-    correctSound.play();
-  } else {
-    wrongSound.play();
-  }
+  if (selected === current.correct) { score++; correctSound.play(); }
+  else { wrongSound.play(); }
   nextBtn.classList.remove('hidden');
 }
 
 nextBtn.addEventListener('click', () => {
+  clickSound.play();
   questionIndex++;
-  if (questionIndex < 10) {
-    loadQuestion();
-  } else {
-    showResult();
-  }
+  if (questionIndex < quizData[theme].length) loadQuestion();
+  else finishTheme();
 });
 
-function showResult() {
-  quiz.innerHTML = `
-    <h1>Fim do Tema: ${theme}</h1>
-    <p>Você acertou <strong>${score}</strong> de 10 perguntas.</p>
-    <button onclick="backToThemes()">Voltar aos temas</button>
-  `;
+function finishTheme() {
+  totalScore += score;
+  currentThemeIndex++;
+  if (currentThemeIndex < themesOrder.length) {
+    showTransition(() => {
+      startTheme();
+    });
+  } else {
+    quiz.innerHTML = `<h1>🎉 Você completou todo o Quiz!</h1><p>Pontuação total: ${totalScore} de ${Object.values(quizData).flat().length}.</p><p>Parabéns por concluir todos os temas! 🌟</p><button onclick="backToStart()">Jogar novamente</button>`;
+  }
 }
 
-function backToThemes() {
+function showTransition(callback) {
+  transition.classList.add('active');
+  transition.innerHTML = `✨ Mudando para o próximo tema: <b>${themesOrder[currentThemeIndex]}</b>...`;
+  setTimeout(() => {
+    transition.classList.remove('active');
+    callback();
+  }, 3000);
+}
+
+function backToStart() {
+  clickSound.play();
   quiz.classList.add('hidden');
-  themeScreen.classList.remove('hidden');
+  startScreen.classList.remove('hidden');
+}
+
+/* === Música === */
+function toggleMusic() {
+  if (bgMusic.paused) bgMusic.play();
+  else bgMusic.pause();
+}
+function setVolume(v) {
+  bgMusic.volume = v;
 }
 </script>
 </body>
