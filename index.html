@@ -14,24 +14,22 @@
     align-items: center;
     height: 100vh;
     margin: 0;
+    text-align: center;
   }
 
-  .quiz-container {
+  .container {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     padding: 30px;
     width: 90%;
     max-width: 600px;
-    text-align: center;
     box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(10px);
     animation: fadeIn 1s ease;
   }
 
-  h1 {
-    font-size: 2em;
+  h1, h2 {
     margin-bottom: 20px;
-    color: #fff;
   }
 
   button {
@@ -39,9 +37,9 @@
     color: #0a2a88;
     border: none;
     border-radius: 10px;
-    padding: 10px 20px;
+    padding: 12px 25px;
     margin: 8px;
-    font-size: 1em;
+    font-size: 1.1em;
     cursor: pointer;
     transition: all 0.3s ease;
   }
@@ -64,13 +62,33 @@
 </head>
 <body>
 
-<div class="quiz-container" id="quiz">
-  <h1 id="theme">Rito</h1>
-  <p id="question">Carregando pergunta...</p>
+<div class="container" id="start-screen">
+  <h1>Quiz Azul e Branco</h1>
+  <h3>Criado por André, Pedro, Ian e Gabriel – 9º Ano B</h3>
+  <button onclick="startGame()">Começar</button>
+</div>
+
+<div class="container hidden" id="theme-screen">
+  <h2>Escolha um tema para começar</h2>
+  <button onclick="selectTheme('Rito')">Rito</button>
+  <button onclick="selectTheme('Símbolo')">Símbolo</button>
+  <button onclick="selectTheme('Mito')">Mito</button>
+</div>
+
+<div class="container hidden" id="quiz">
+  <h1 id="theme">Tema</h1>
+  <p id="question">Pergunta</p>
   <div id="answers"></div>
   <p id="progress"></p>
   <button id="nextBtn" class="hidden">Próxima</button>
 </div>
+
+<audio id="correctSound">
+  <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
+</audio>
+<audio id="wrongSound">
+  <source src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" type="audio/ogg">
+</audio>
 
 <script>
 const quizData = {
@@ -112,19 +130,36 @@ const quizData = {
   ]
 };
 
-let themes = ["Rito", "Símbolo", "Mito"];
-let themeIndex = 0;
+let theme = "";
 let questionIndex = 0;
 let score = 0;
 
+const startScreen = document.getElementById('start-screen');
+const themeScreen = document.getElementById('theme-screen');
+const quiz = document.getElementById('quiz');
 const themeEl = document.getElementById('theme');
 const questionEl = document.getElementById('question');
 const answersEl = document.getElementById('answers');
 const progressEl = document.getElementById('progress');
 const nextBtn = document.getElementById('nextBtn');
+const correctSound = document.getElementById('correctSound');
+const wrongSound = document.getElementById('wrongSound');
+
+function startGame() {
+  startScreen.classList.add('hidden');
+  themeScreen.classList.remove('hidden');
+}
+
+function selectTheme(selected) {
+  theme = selected;
+  themeScreen.classList.add('hidden');
+  quiz.classList.remove('hidden');
+  questionIndex = 0;
+  score = 0;
+  loadQuestion();
+}
 
 function loadQuestion() {
-  const theme = themes[themeIndex];
   const current = quizData[theme][questionIndex];
   themeEl.textContent = theme;
   questionEl.textContent = current.q;
@@ -141,15 +176,24 @@ function loadQuestion() {
 }
 
 function checkAnswer(selected) {
-  const theme = themes[themeIndex];
   const current = quizData[theme][questionIndex];
   const buttons = answersEl.querySelectorAll('button');
   buttons.forEach((btn, i) => {
     btn.disabled = true;
-    if (i === current.correct) btn.style.background = '#00ff99';
-    else if (i === selected) btn.style.background = '#ff4444';
+    if (i === current.correct) {
+      btn.style.background = '#00ff99';
+    }
+    if (i === selected && i !== current.correct) {
+      btn.style.background = '#ff4444';
+    }
   });
-  if (selected === current.correct) score++;
+
+  if (selected === current.correct) {
+    score++;
+    correctSound.play();
+  } else {
+    wrongSound.play();
+  }
   nextBtn.classList.remove('hidden');
 }
 
@@ -158,25 +202,22 @@ nextBtn.addEventListener('click', () => {
   if (questionIndex < 10) {
     loadQuestion();
   } else {
-    themeIndex++;
-    questionIndex = 0;
-    if (themeIndex < themes.length) {
-      loadQuestion();
-    } else {
-      showResult();
-    }
+    showResult();
   }
 });
 
 function showResult() {
-  document.getElementById('quiz').innerHTML = `
-    <h1>Fim do Quiz!</h1>
-    <p>Você acertou <strong>${score}</strong> de 30 perguntas.</p>
-    <p>Parabéns por completar todos os temas!</p>
+  quiz.innerHTML = `
+    <h1>Fim do Tema: ${theme}</h1>
+    <p>Você acertou <strong>${score}</strong> de 10 perguntas.</p>
+    <button onclick="backToThemes()">Voltar aos temas</button>
   `;
 }
 
-loadQuestion();
+function backToThemes() {
+  quiz.classList.add('hidden');
+  themeScreen.classList.remove('hidden');
+}
 </script>
 </body>
 </html>
