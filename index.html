@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Azul e Branco</title>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0a2a88, #00aaff);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .quiz-container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 1s ease;
+  }
+
+  h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #fff;
+  }
+
+  button {
+    background: #fff;
+    color: #0a2a88;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin: 8px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  button:hover {
+    background: #00aaff;
+    color: #fff;
+    box-shadow: 0 0 10px #00aaff;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+</style>
+</head>
+<body>
+
+<div class="quiz-container" id="quiz">
+  <h1 id="theme">Rito</h1>
+  <p id="question">Carregando pergunta...</p>
+  <div id="answers"></div>
+  <p id="progress"></p>
+  <button id="nextBtn" class="hidden">Próxima</button>
+</div>
+
+<script>
+const quizData = {
+  "Rito": [
+    { q: "O que é um rito?", a: ["Uma prática simbólica repetida", "Um ser espiritual", "Um lugar sagrado", "Uma história mística"], correct: 0 },
+    { q: "Os ritos geralmente expressam:", a: ["A cultura e fé de um grupo", "Somente diversão", "Fatos científicos", "Curiosidades históricas"], correct: 0 },
+    { q: "Qual destes é um exemplo de rito?", a: ["Casamento", "Matemática", "Pintura", "Sonho"], correct: 0 },
+    { q: "Ritos são frequentemente ligados a:", a: ["Tradições e cerimônias", "Jogos e apostas", "Viagens e turismo", "Estudos científicos"], correct: 0 },
+    { q: "Ritos podem marcar:", a: ["Passagens da vida", "O tempo do dia", "O clima", "A política"], correct: 0 },
+    { q: "Um rito pode ser considerado:", a: ["Ato simbólico e significativo", "Algo sem importância", "Um erro cultural", "Somente religião"], correct: 0 },
+    { q: "Ritos podem reforçar:", a: ["Identidade e união social", "Desigualdade", "Ignorância", "Conflito"], correct: 0 },
+    { q: "Em religiões, o rito serve para:", a: ["Ligar o humano ao sagrado", "Ensinar matemática", "Contar histórias", "Divertir"], correct: 0 },
+    { q: "Ritos são diferentes conforme:", a: ["A cultura e crença", "O clima", "A política", "A tecnologia"], correct: 0 },
+    { q: "Um exemplo de rito de passagem é:", a: ["Formatura", "Trabalho", "Leitura", "Alimentação"], correct: 0 }
+  ],
+  "Símbolo": [
+    { q: "O que é um símbolo?", a: ["Representação de uma ideia", "Um objeto comum", "Um som qualquer", "Um tipo de rito"], correct: 0 },
+    { q: "Símbolos são usados para:", a: ["Transmitir significados", "Comer", "Dormir", "Escrever"], correct: 0 },
+    { q: "O símbolo da paz é:", a: ["O círculo com ramos", "Uma estrela", "Uma chama", "Um triângulo"], correct: 0 },
+    { q: "Símbolos religiosos representam:", a: ["O sagrado e suas crenças", "Cidades", "Lugares turísticos", "Números"], correct: 0 },
+    { q: "A cruz é símbolo de:", a: ["Cristianismo", "Budismo", "Islã", "Hinduísmo"], correct: 0 },
+    { q: "Um símbolo pode ser:", a: ["Imagem, som ou gesto", "Somente objeto", "Somente palavra", "Somente cor"], correct: 0 },
+    { q: "Símbolos unem pessoas porque:", a: ["Compartilham significados", "São bonitos", "São raros", "São misteriosos"], correct: 0 },
+    { q: "As cores também são símbolos de:", a: ["Emoções e ideias", "Somente arte", "Matemática", "Ruído"], correct: 0 },
+    { q: "O símbolo do coração representa:", a: ["Amor", "Medo", "Fome", "Tempo"], correct: 0 },
+    { q: "Símbolos podem mudar de sentido conforme:", a: ["A cultura", "O clima", "O idioma", "O tamanho"], correct: 0 }
+  ],
+  "Mito": [
+    { q: "O que é um mito?", a: ["Uma narrativa simbólica", "Um fato científico", "Uma lei política", "Uma invenção moderna"], correct: 0 },
+    { q: "Mitos explicam:", a: ["A origem e o sentido das coisas", "A economia", "A tecnologia", "A matemática"], correct: 0 },
+    { q: "Os mitos são comuns em:", a: ["Todas as culturas", "Apenas na Grécia", "Somente na Ásia", "Nenhuma"], correct: 0 },
+    { q: "Um herói mitológico representa:", a: ["Valores humanos", "Dinheiro", "Política", "Ciência"], correct: 0 },
+    { q: "Os mitos geralmente têm:", a: ["Deuses e forças sobrenaturais", "Animais de estimação", "Máquinas", "Números"], correct: 0 },
+    { q: "O mito serve para:", a: ["Dar sentido à realidade", "Ensinar matemática", "Registrar fatos reais", "Controlar o clima"], correct: 0 },
+    { q: "Um exemplo de mito famoso é:", a: ["Prometeu", "Einstein", "Newton", "Tesla"], correct: 0 },
+    { q: "Os mitos podem ser contados por meio de:", a: ["Palavras e rituais", "Somente livros", "Computadores", "Televisão"], correct: 0 },
+    { q: "O mito e o símbolo se relacionam porque:", a: ["Ambos expressam significados profundos", "São opostos", "Não se ligam", "São ciências"], correct: 0 },
+    { q: "O mito do dilúvio representa:", a: ["Renovação e purificação", "Destruição sem sentido", "Fome", "Inverno"], correct: 0 }
+  ]
+};
+
+let themes = ["Rito", "Símbolo", "Mito"];
+let themeIndex = 0;
+let questionIndex = 0;
+let score = 0;
+
+const themeEl = document.getElementById('theme');
+const questionEl = document.getElementById('question');
+const answersEl = document.getElementById('answers');
+const progressEl = document.getElementById('progress');
+const nextBtn = document.getElementById('nextBtn');
+
+function loadQuestion() {
+  const theme = themes[themeIndex];
+  const current = quizData[theme][questionIndex];
+  themeEl.textContent = theme;
+  questionEl.textContent = current.q;
+  answersEl.innerHTML = '';
+  progressEl.textContent = `Pergunta ${questionIndex + 1} de 10 (${theme})`;
+
+  current.a.forEach((answer, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = answer;
+    btn.onclick = () => checkAnswer(i);
+    answersEl.appendChild(btn);
+  });
+  nextBtn.classList.add('hidden');
+}
+
+function checkAnswer(selected) {
+  const theme = themes[themeIndex];
+  const current = quizData[theme][questionIndex];
+  const buttons = answersEl.querySelectorAll('button');
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === current.correct) btn.style.background = '#00ff99';
+    else if (i === selected) btn.style.background = '#ff4444';
+  });
+  if (selected === current.correct) score++;
+  nextBtn.classList.remove('hidden');
+}
+
+nextBtn.addEventListener('click', () => {
+  questionIndex++;
+  if (questionIndex < 10) {
+    loadQuestion();
+  } else {
+    themeIndex++;
+    questionIndex = 0;
+    if (themeIndex < themes.length) {
+      loadQuestion();
+    } else {
+      showResult();
+    }
+  }
+});
+
+function showResult() {
+  document.getElementById('quiz').innerHTML = `
+    <h1>Fim do Quiz!</h1>
+    <p>Você acertou <strong>${score}</strong> de 30 perguntas.</p>
+    <p>Parabéns por completar todos os temas!</p>
+  `;
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
